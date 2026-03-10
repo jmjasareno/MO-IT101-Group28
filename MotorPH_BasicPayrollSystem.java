@@ -16,7 +16,7 @@ public class MotorPH_BasicPayrollSystem {
     static final String EMPLOYEE_FILE = "resources/MotorPH_Employee Data.csv";
     static final String ATTENDANCE_FILE = "resources/Attendance Record.csv";
 
-    // Valid Credentials
+    // Valid Credentials for two user types
     static final String EMPLOYEE_USERNAME = "employee";
     static final String PAYROLL_USERNAME = "payroll_staff";
     static final String COMMON_PASSWORD = "12345";
