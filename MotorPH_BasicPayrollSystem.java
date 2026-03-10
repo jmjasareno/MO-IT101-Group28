@@ -245,7 +245,7 @@ public class MotorPH_BasicPayrollSystem {
         return employees;
     }
 
-    // Read attendance and group total hours per cutof
+    // Read attendance and group total hours per cutoff
     static Map<String, Map<String, Double>> readAttendanceHours() {
         Map<String, Map<String, Double>> allAttendance = new LinkedHashMap<>();
 
