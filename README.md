@@ -22,6 +22,7 @@ Aldrin John Tamayo
 ajtamayo@mmdc.mcl.edu.ph  
 
 **Team Name:** Group 28
+**Date:** 03/10/2026
 
 ---
 
@@ -51,7 +52,7 @@ Assisted in implementing the login portion of the system. This helped establish 
 ### Jorge Castro  
 Email: lr.jcastro@mmdc.mcl.edu.ph  
 
-Assisted in preparing the employee menu that appears after logging in as an employee. This work helped structure the options that allow employees to view their employee number, employee name, and birthday.
+Assisted in preparing the employee menu that appears after logging in as an employee.
 
 ---
 
