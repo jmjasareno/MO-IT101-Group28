@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 public class MotorPH_BasicPayrollSystem {
 
-    // CSV file paths
+    // CSV file paths for data sources
     static final String EMPLOYEE_FILE = "resources/MotorPH_Employee Data.csv";
     static final String ATTENDANCE_FILE = "resources/Attendance Record.csv";
 
@@ -21,12 +21,14 @@ public class MotorPH_BasicPayrollSystem {
     static final String PAYROLL_USERNAME = "payroll_staff";
     static final String COMMON_PASSWORD = "12345";
 
+    // Date and time formatters for CSV data
     static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("H:mm");
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
+        // Check if required file exist
         if (!fileReadable(EMPLOYEE_FILE) || !fileReadable(ATTENDANCE_FILE)) {
             System.out.println("One or more required CSV files are missing or unreadable.");
             System.out.println("Please check the resources folder.");
@@ -41,6 +43,7 @@ public class MotorPH_BasicPayrollSystem {
         System.out.print("Enter password: ");
         String password = scanner.nextLine().trim();
 
+        // Proceeding based on username and password
         if (username.equals(EMPLOYEE_USERNAME) && password.equals(COMMON_PASSWORD)) {
             employeeMenu(scanner);
         } else if (username.equals(PAYROLL_USERNAME) && password.equals(COMMON_PASSWORD)) {
@@ -52,7 +55,7 @@ public class MotorPH_BasicPayrollSystem {
         scanner.close();
     }
 
-    // Employee menu
+    // Displays the employee menu
     static void employeeMenu(Scanner scanner) {
         while (true) {
             System.out.println("\n===== Employee Menu =====");
@@ -74,7 +77,7 @@ public class MotorPH_BasicPayrollSystem {
         }
     }
 
-    // Payroll staff main menu
+    // Display the payroll staff main menu
     static void payrollStaffMenu(Scanner scanner) {
         while (true) {
             System.out.println("\n===== Payroll Staff Menu =====");
@@ -94,7 +97,7 @@ public class MotorPH_BasicPayrollSystem {
         }
     }
 
-    // Payroll processing sub-menu
+    // Displays the payroll processing sub-menu
     static void processPayrollMenu(Scanner scanner) {
         while (true) {
             System.out.println("\n===== Process Payroll =====");
