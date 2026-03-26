@@ -10,6 +10,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+/**
+* MotorPh Basic Payroll System
+* This processes payroll data for employees based on attendancce records
+* It supports user types: employee and payroll staff
+*/
 public class MotorPH_BasicPayrollSystem {
 
     // CSV file paths for data sources
@@ -25,6 +30,9 @@ public class MotorPH_BasicPayrollSystem {
     static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("H:mm");
 
+    /**
+    *
+    */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
@@ -55,7 +63,11 @@ public class MotorPH_BasicPayrollSystem {
         scanner.close();
     }
 
-    // Displays the employee menu
+    /** Displays the employee menu
+    *Employees can view their details or exit the program
+    *
+    *@param scanner Scanner object for reading user input
+    */
     static void employeeMenu(Scanner scanner) {
         while (true) {
             System.out.println("\n===== Employee Menu =====");
@@ -77,7 +89,12 @@ public class MotorPH_BasicPayrollSystem {
         }
     }
 
-    // Display the payroll staff main menu
+    /**
+    *Display the payroll staff main menu
+    *Payroll staff can process payroll or exit the program
+    *
+    *@param scanner Scanner object for reading user input
+    */
     static void payrollStaffMenu(Scanner scanner) {
         while (true) {
             System.out.println("\n===== Payroll Staff Menu =====");
@@ -97,7 +114,11 @@ public class MotorPH_BasicPayrollSystem {
         }
     }
 
-    // Displays the payroll processing sub-menu
+    /** Displays the payroll processing sub-menu
+    *Payroll staff can process one employee, all employee, or exit the program
+    *
+    *@param scanner Scanner object for reading user input
+    */
     static void processPayrollMenu(Scanner scanner) {
         while (true) {
             System.out.println("\n===== Process Payroll =====");
@@ -122,7 +143,12 @@ public class MotorPH_BasicPayrollSystem {
         }
     }
 
-    // Show employee details for employee login
+    /** 
+    * Displays employee details for the given employee number.
+    * Used by employee menu.
+    *
+    * @param employeeNumber The employee number to look up
+    */
     static void showEmployeeDetails(String employeeNumber) {
         Map<String, String[]> employees = readEmployeeData();
 
@@ -138,7 +164,11 @@ public class MotorPH_BasicPayrollSystem {
         System.out.println("Birthday: " + clean(row[3]));
     }
 
-    // Process payroll for one employee
+    /** 
+    * Process payroll for one employee
+    * 
+    * @param employeeNumber
+    */
     static void processOneEmployee(String employeeNumber) {
         Map<String, String[]> employees = readEmployeeData();
         Map<String, Map<String, Double>> attendanceHours = readAttendanceHours();
@@ -151,7 +181,9 @@ public class MotorPH_BasicPayrollSystem {
         showPayrollForEmployee(employeeNumber, employees.get(employeeNumber), attendanceHours.get(employeeNumber));
     }
 
-    // Process payroll for all employees
+    /**
+    * Process payroll for all employees
+    */
     static void processAllEmployees() {
         Map<String, String[]> employees = readEmployeeData();
         Map<String, Map<String, Double>> attendanceHours = readAttendanceHours();
@@ -161,7 +193,13 @@ public class MotorPH_BasicPayrollSystem {
         }
     }
 
-    // Display payroll records from June to December
+    /**
+    * Displays complete payroll records for an employee from June to December
+    * Dsiplay first and second cutoff with all deductions
+    * @param employeeNumber The employee's ID number
+    * @param employeeRow
+    * @param employeeHours
+    */ 
     static void showPayrollForEmployee(String employeeNumber, String[] employeeRow, Map<String, Double> employeeHours) {
         String firstName = clean(employeeRow[2]);
         String lastName = clean(employeeRow[1]);
@@ -174,10 +212,12 @@ public class MotorPH_BasicPayrollSystem {
         System.out.println("Birthday: " + birthday);
         System.out.println("==============================================================");
 
+        // Process each month from June to December
         for (int month = 6; month <= 12; month++) {
             String firstCutoffKey = "2024-" + twoDigits(month) + "-1";
             String secondCutoffKey = "2024-" + twoDigits(month) + "-2";
 
+            
             double firstCutoffHours = 0.0;
             double secondCutoffHours = 0.0;
 
@@ -190,10 +230,11 @@ public class MotorPH_BasicPayrollSystem {
                 }
             }
 
+            // Gross salaries
             double firstGross = firstCutoffHours * hourlyRate;
             double secondGross = secondCutoffHours * hourlyRate;
 
-            // Compute deductions only after combining both cutoffs
+            // Compute total monthly gross for deductions
             double monthlyGross = firstGross + secondGross;
             double sss = computeSSS(monthlyGross);
             double philHealth = computePhilHealth(monthlyGross);
@@ -208,6 +249,7 @@ public class MotorPH_BasicPayrollSystem {
 
             YearMonth ym = YearMonth.of(2024, month);
 
+            // Display first cutoff (1st to 15ht)
             System.out.println("\nCutoff Date: " + monthName(month) + " 1 to " + monthName(month) + " 15");
             System.out.println("Total Hours Worked: " + firstCutoffHours);
             System.out.println("Gross Salary: " + firstGross);
@@ -215,6 +257,7 @@ public class MotorPH_BasicPayrollSystem {
 
             System.out.println();
 
+            // Display secong cutoff (16th to end of the month)
             System.out.println("Cutoff Date: " + monthName(month) + " 16 to " + monthName(month) + " " + ym.atEndOfMonth().getDayOfMonth());
             System.out.println("Total Hours Worked: " + secondCutoffHours);
             System.out.println("Gross Salary: " + secondGross);
@@ -227,7 +270,12 @@ public class MotorPH_BasicPayrollSystem {
         }
     }
 
-    // Read employee CSV data
+    /**
+    * Read employee CSV data and stores in map
+    * The map uses employee as key and the full row array as value.
+    *
+    * @return Map of employees numbers to employee data arrays
+    */
     static Map<String, String[]> readEmployeeData() {
         Map<String, String[]> employees = new LinkedHashMap<>();
 
@@ -248,7 +296,13 @@ public class MotorPH_BasicPayrollSystem {
         return employees;
     }
 
-    // Read attendance and group total hours per cutoff
+    /** 
+    * Read attendance and group total hours worked per cutoff.
+    * Group hours by employees number and cutoff period.
+    *
+    * @return Map of employee numbers to map of cutoff periods to total hours
+    */
+    */
     static Map<String, Map<String, Double>> readAttendanceHours() {
         Map<String, Map<String, Double>> allAttendance = new LinkedHashMap<>();
 
@@ -276,7 +330,7 @@ public class MotorPH_BasicPayrollSystem {
                     LocalTime logIn = LocalTime.parse(logInText, TIME_FORMAT);
                     LocalTime logOut = LocalTime.parse(logOutText, TIME_FORMAT);
 
-                    // Only display June to December
+                    // Only process records from June to December
                     if (date.getMonthValue() < 6 || date.getMonthValue() > 12) {
                         continue;
                     }
@@ -290,7 +344,7 @@ public class MotorPH_BasicPayrollSystem {
                     if (!employeeCutoffHours.containsKey(cutoffKey)) {
                         employeeCutoffHours.put(cutoffKey, 0.0);
                     }
-
+                    
                     employeeCutoffHours.put(cutoffKey, employeeCutoffHours.get(cutoffKey) + workedHours);
 
                 } catch (Exception e) {
@@ -304,7 +358,15 @@ public class MotorPH_BasicPayrollSystem {
         return allAttendance;
     }
 
-    // Compute hours worked based on the given rules
+    /** Compute hours worked based on company policies:
+    * Work hours are from 8:00AM - 5:00PM only
+    * Grace period up to 8:10 AM counts as 8:00AM
+    * one hour lunch break
+    *
+    *@param actualLogIn The actual login time
+    *@param actualLogOut The actual logout time
+    *@return Total hours worked
+    */
     static double computeHoursWorked(LocalTime actualLogIn, LocalTime actualLogOut) {
         LocalTime officialStart = LocalTime.of(8, 0);
         LocalTime officialEnd = LocalTime.of(17, 0);
@@ -320,11 +382,12 @@ public class MotorPH_BasicPayrollSystem {
         } else {
             adjustedIn = actualLogIn;
         }
-
+        
         if (!adjustedOut.isAfter(adjustedIn)) {
             return 0.0;
         }
 
+        // Calculates total minutes worked
         double workedMinutes = Duration.between(adjustedIn, adjustedOut).toMinutes();
         double workedHours = workedMinutes / 60.0;
 
@@ -338,7 +401,13 @@ public class MotorPH_BasicPayrollSystem {
         return workedHours;
     }
 
-    // Determine cutoff key
+    /**
+    * Determines the cutoff key
+    * First cutoff: 1st to 15th of the month
+    * Second cutoff: 16th to end of the month
+    *
+    * 
+    */
     static String getCutoffKey(LocalDate date) {
         String yearMonth = date.getYear() + "-" + twoDigits(date.getMonthValue());
 
@@ -349,7 +418,12 @@ public class MotorPH_BasicPayrollSystem {
         }
     }
 
-    // SSS deduction
+    /** 
+    * Compute SSS contribution based on monthly gross salary
+    *
+    * @param monthlyGross MOnthly gross salary
+    * @return SSS contribution amount
+    */
     static double computeSSS(double monthlyGross) {
         if (monthlyGross < 3250) return 135.0;
         else if (monthlyGross < 3750) return 157.5;
@@ -398,7 +472,14 @@ public class MotorPH_BasicPayrollSystem {
         else return 1125.0;
     }
 
-    // PhilHealth deduction
+    /**
+    * Computes PhilHealth deduction
+    * Premium rate is 3% of monthly gross
+    * Monthly gross is capped at 10,000 and 60,000
+    *
+    * @param monthlyGross Monthly gross salary
+    * @return Employee's Philhealth 
+    */
     static double computePhilHealth(double monthlyGross) {
         double premiumRate = 0.03;
         double salaryFloor = 10000.0;
@@ -416,7 +497,14 @@ public class MotorPH_BasicPayrollSystem {
         return monthlyPremium / 2.0;
     }
 
-    // Pag-IBIG deduction
+    /**
+    * Computes Pag-IBIG deduction
+    * 1% for salary up to 1,500, 2% for salary above 1,500
+    * Maximum cocntribution is 100
+    *
+    * @param monthlyGross Monthly gross salaray
+    * @return Pag-IBIG deuctiona amount
+    */
     static double computePagIbig(double monthlyGross) {
         double contribution;
 
@@ -433,7 +521,11 @@ public class MotorPH_BasicPayrollSystem {
         return contribution;
     }
 
-    // Withholding tax deduction
+    /* Withholding tax deduction
+     * 
+     *@param taxableIncome Income after SSS, PhilHealth, and Pag-IBIG deductions
+     *@return Withhlding tax amount
+     */
     static double computeWithholdingTax(double taxableIncome) {
         if (taxableIncome <= 20832) {
             return 0.0;
@@ -450,7 +542,11 @@ public class MotorPH_BasicPayrollSystem {
         }
     }
 
-    // Check if file is readable
+    /* Check if file is readable
+    *
+    * @param filePath Path to the file
+    * @return true if file can be read, false otherwise
+    */
     static boolean fileReadable(String filePath) {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             return true;
@@ -459,17 +555,32 @@ public class MotorPH_BasicPayrollSystem {
         }
     }
 
-    // Split CSV while respecting quoted commas
+    /**
+    * Split CSV while respecting quoted commas.
+    *
+    * @param line The CSV line to split
+    * @return Array of field values 
+    */
     static String[] splitCsv(String line) {
         return line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
     }
 
-    // Clean values
+    /**
+    * Remove quotes and trims whitespace from a string
+    *
+    * @param text The text to clean
+    * @return Cleaned string
+    */
     static String clean(String text) {
         return text.trim().replace("\"", "");
     }
 
-    // Convert number text to double
+    /**
+    * Convert a string to double, handling commas and empty strings.
+    *
+    * @param text The text to test
+    * @return Double value, or 0.0 if test fails
+    */
     static double parseNumber(String text) {
         String cleaned = clean(text).replace(",", "");
 
@@ -480,12 +591,22 @@ public class MotorPH_BasicPayrollSystem {
         return Double.parseDouble(cleaned);
     }
 
-    // Format month as 2 digits
+    /** 
+    * Format a number as a two-digit string.
+    *
+    * @param number The number to format
+    * @return Two-digit string
+    */
     static String twoDigits(int number) {
         return number < 10 ? "0" + number : String.valueOf(number);
     }
 
-    // Convert month number to display name
+    /*
+    * Convert month number to month name
+    *
+    * @param month Month number (1-12)
+    * @return Month name
+    */
     static String monthName(int month) {
         switch (month) {
             case 1: return "January";
