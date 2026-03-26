@@ -63,7 +63,8 @@ public class MotorPH_BasicPayrollSystem {
         scanner.close();
     }
 
-    /** Displays the employee menu
+    /** 
+    *Displays the employee menu
     *Employees can view their details or exit the program
     *
     *@param scanner Scanner object for reading user input
@@ -114,7 +115,8 @@ public class MotorPH_BasicPayrollSystem {
         }
     }
 
-    /** Displays the payroll processing sub-menu
+    /** 
+    *Displays the payroll processing sub-menu
     *Payroll staff can process one employee, all employee, or exit the program
     *
     *@param scanner Scanner object for reading user input
@@ -167,7 +169,7 @@ public class MotorPH_BasicPayrollSystem {
     /** 
     * Process payroll for one employee
     * 
-    * @param employeeNumber
+    * @param employeeNumber The employee number to process
     */
     static void processOneEmployee(String employeeNumber) {
         Map<String, String[]> employees = readEmployeeData();
@@ -195,10 +197,10 @@ public class MotorPH_BasicPayrollSystem {
 
     /**
     * Displays complete payroll records for an employee from June to December
-    * Dsiplay first and second cutoff with all deductions
+    * Displays first and second cutoff with all deductions
     * @param employeeNumber The employee's ID number
-    * @param employeeRow
-    * @param employeeHours
+    * @param employeeRow Array containing employee data from CSV
+    * @param employeeHours Map of 
     */ 
     static void showPayrollForEmployee(String employeeNumber, String[] employeeRow, Map<String, Double> employeeHours) {
         String firstName = clean(employeeRow[2]);
@@ -217,7 +219,7 @@ public class MotorPH_BasicPayrollSystem {
             String firstCutoffKey = "2024-" + twoDigits(month) + "-1";
             String secondCutoffKey = "2024-" + twoDigits(month) + "-2";
 
-            
+            // Hours for each cutoff, default to 0 if it is not found
             double firstCutoffHours = 0.0;
             double secondCutoffHours = 0.0;
 
@@ -230,11 +232,11 @@ public class MotorPH_BasicPayrollSystem {
                 }
             }
 
-            // Gross salaries
+            // Compute gross salaries
             double firstGross = firstCutoffHours * hourlyRate;
             double secondGross = secondCutoffHours * hourlyRate;
-
-            // Compute total monthly gross for deductions
+            
+            // Compute deductions only after combining both cutoffs to get the total monthly gross.
             double monthlyGross = firstGross + secondGross;
             double sss = computeSSS(monthlyGross);
             double philHealth = computePhilHealth(monthlyGross);
@@ -249,7 +251,7 @@ public class MotorPH_BasicPayrollSystem {
 
             YearMonth ym = YearMonth.of(2024, month);
 
-            // Display first cutoff (1st to 15ht)
+            // Display first cutoff (1st to 15th)
             System.out.println("\nCutoff Date: " + monthName(month) + " 1 to " + monthName(month) + " 15");
             System.out.println("Total Hours Worked: " + firstCutoffHours);
             System.out.println("Gross Salary: " + firstGross);
@@ -257,7 +259,7 @@ public class MotorPH_BasicPayrollSystem {
 
             System.out.println();
 
-            // Display secong cutoff (16th to end of the month)
+            // Display second cutoff (16th to end of the month)
             System.out.println("Cutoff Date: " + monthName(month) + " 16 to " + monthName(month) + " " + ym.atEndOfMonth().getDayOfMonth());
             System.out.println("Total Hours Worked: " + secondCutoffHours);
             System.out.println("Gross Salary: " + secondGross);
@@ -302,7 +304,6 @@ public class MotorPH_BasicPayrollSystem {
     *
     * @return Map of employee numbers to map of cutoff periods to total hours
     */
-    */
     static Map<String, Map<String, Double>> readAttendanceHours() {
         Map<String, Map<String, Double>> allAttendance = new LinkedHashMap<>();
 
@@ -321,6 +322,7 @@ public class MotorPH_BasicPayrollSystem {
                 String logInText = clean(row[4]);
                 String logOutText = clean(row[5]);
 
+                // skip empty values
                 if (employeeNumber.isEmpty() || dateText.isEmpty() || logInText.isEmpty() || logOutText.isEmpty()) {
                     continue;
                 }
@@ -338,9 +340,11 @@ public class MotorPH_BasicPayrollSystem {
                     double workedHours = computeHoursWorked(logIn, logOut);
                     String cutoffKey = getCutoffKey(date);
 
+                    
                     allAttendance.putIfAbsent(employeeNumber, new LinkedHashMap<String, Double>());
                     Map<String, Double> employeeCutoffHours = allAttendance.get(employeeNumber);
 
+                    // 
                     if (!employeeCutoffHours.containsKey(cutoffKey)) {
                         employeeCutoffHours.put(cutoffKey, 0.0);
                     }
@@ -358,7 +362,8 @@ public class MotorPH_BasicPayrollSystem {
         return allAttendance;
     }
 
-    /** Compute hours worked based on company policies:
+    /** 
+    * Compute hours worked based on company policies:
     * Work hours are from 8:00AM - 5:00PM only
     * Grace period up to 8:10 AM counts as 8:00AM
     * one hour lunch break
@@ -382,7 +387,8 @@ public class MotorPH_BasicPayrollSystem {
         } else {
             adjustedIn = actualLogIn;
         }
-        
+
+        // Check if logout is after login
         if (!adjustedOut.isAfter(adjustedIn)) {
             return 0.0;
         }
@@ -406,7 +412,8 @@ public class MotorPH_BasicPayrollSystem {
     * First cutoff: 1st to 15th of the month
     * Second cutoff: 16th to end of the month
     *
-    * 
+    * @param date The date to clasify
+    * @return String date format 
     */
     static String getCutoffKey(LocalDate date) {
         String yearMonth = date.getYear() + "-" + twoDigits(date.getMonthValue());
@@ -421,7 +428,7 @@ public class MotorPH_BasicPayrollSystem {
     /** 
     * Compute SSS contribution based on monthly gross salary
     *
-    * @param monthlyGross MOnthly gross salary
+    * @param monthlyGross Monthly gross salary
     * @return SSS contribution amount
     */
     static double computeSSS(double monthlyGross) {
@@ -500,10 +507,10 @@ public class MotorPH_BasicPayrollSystem {
     /**
     * Computes Pag-IBIG deduction
     * 1% for salary up to 1,500, 2% for salary above 1,500
-    * Maximum cocntribution is 100
+    * Maximum contribution is 100
     *
     * @param monthlyGross Monthly gross salaray
-    * @return Pag-IBIG deuctiona amount
+    * @return Pag-IBIG deduction amount
     */
     static double computePagIbig(double monthlyGross) {
         double contribution;
@@ -521,10 +528,11 @@ public class MotorPH_BasicPayrollSystem {
         return contribution;
     }
 
-    /* Withholding tax deduction
+    /**
+     * Withholding tax deduction
      * 
-     *@param taxableIncome Income after SSS, PhilHealth, and Pag-IBIG deductions
-     *@return Withhlding tax amount
+     * @param taxableIncome Income after SSS, PhilHealth, and Pag-IBIG deductions
+     * @return Witholding tax amount
      */
     static double computeWithholdingTax(double taxableIncome) {
         if (taxableIncome <= 20832) {
@@ -542,7 +550,8 @@ public class MotorPH_BasicPayrollSystem {
         }
     }
 
-    /* Check if file is readable
+    /**
+    * Check if file is readable
     *
     * @param filePath Path to the file
     * @return true if file can be read, false otherwise
